@@ -1,6 +1,7 @@
 package com.crewmeister.cmcodingchallenge.currency;
 
 public class CurrencyConversionRates {
+
     private double conversionRate;
 
     public CurrencyConversionRates(double conversionRate) {
