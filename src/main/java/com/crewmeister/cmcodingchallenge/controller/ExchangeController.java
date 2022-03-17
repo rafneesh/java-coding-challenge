@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 @RestController()
 @RequestMapping("/api/exchange")
@@ -41,11 +43,11 @@ public class ExchangeController {
     }
 
     @GetMapping("/euro/converter/{date}")
-    public ResponseEntity<String> getEuroConvertedAmountForDate(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date, @RequestParam(value = "currencyFrom", required = true) String currency, @RequestParam(value = "amount", required = true) Integer amount) {
+    public ResponseEntity<HashMap> getEuroConvertedAmountForDate(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date, @RequestParam(value = "currencyFrom", required = true) String currency, @RequestParam(value = "amount", required = true) BigDecimal amount) {
 
         log.info("Inside getConvertedAmountForDate from ExchangeController " + date + currency + amount);
 
-        return exchangeRateService.getAmountConvertedInEuro(date, currency, amount.doubleValue());
+        return exchangeRateService.getAmountConvertedInEuro(date, currency.toUpperCase(Locale.ROOT), amount);
 
     }
 

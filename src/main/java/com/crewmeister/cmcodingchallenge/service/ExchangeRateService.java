@@ -1,7 +1,7 @@
 package com.crewmeister.cmcodingchallenge.service;
 
-import com.crewmeister.cmcodingchallenge.components.DataFeed;
-import com.crewmeister.cmcodingchallenge.config.Config;
+import com.crewmeister.cmcodingchallenge.components.data.ExchangeRateDataFeed;
+import com.crewmeister.cmcodingchallenge.entity.CurrencyHolder;
 import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
 import com.crewmeister.cmcodingchallenge.exception.CurrencyNotFoundException;
 import com.crewmeister.cmcodingchallenge.exception.ExchangeRateNotFound;
@@ -15,10 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -32,23 +31,28 @@ public class ExchangeRateService {
     private ExchangeRateRepository exchangeRateRepository;
 
     @Autowired
-    private DataFeed dataFeed;
+    private ExchangeRateDataFeed dataFeed;
 
     @Autowired
-    Config config;
+    CurrencyHolder baseCurrency;
 
     @PostConstruct
     public void init() {
         log.info("init in ExchangeRateService STARTS");
-        exchangeRateRepository.saveAll(dataFeed.loadExchangeRates());
+        loadAllExchangeRates();
         log.info("init in ExchangeRateService DONE");
     }
 
     @Scheduled(cron = "${cron.expression}")
     public void execute() {
         log.info("execute in ExchangeRateService STARTS");
-        exchangeRateRepository.saveAll(dataFeed.loadExchangeRates());
+        loadAllExchangeRates();
         log.info("execute in ExchangeRateService DONE");
+    }
+
+    private void loadAllExchangeRates(){
+
+        exchangeRateRepository.saveAll(dataFeed.loadExchangeRates());
     }
 
     public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRates() {
@@ -72,18 +76,22 @@ public class ExchangeRateService {
         return new ResponseEntity<ArrayList<ExchangeRate>>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, currencyFrom, currencyTo), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> getAmountConvertedInEuro(Date date, String currencyFrom, Double amountToBeConverted) {
+    public ResponseEntity<HashMap> getAmountConvertedInEuro(Date date, String currencyFrom, BigDecimal amountToBeConverted) {
+
+        HashMap<String, BigDecimal> convertedResult = new HashMap();
 
         try {
 
-            Currency currency = Currency.getInstance(currencyFrom);
+            var currency = Currency.getInstance(currencyFrom);
+
+            convertedResult.put(currency.getDisplayName(), amountToBeConverted);
 
         }catch (IllegalArgumentException e){
 
             throw new CurrencyNotFoundException();
         }
 
-        List<ExchangeRate> exchangeRateList = exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, Currency.getInstance(currencyFrom), config.getBaseCurrencyHolder().getCurrency());
+        List<ExchangeRate> exchangeRateList = exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, Currency.getInstance(currencyFrom), baseCurrency.getCurrency());
 
         if (exchangeRateList.size() < 1) {
 
@@ -92,11 +100,11 @@ public class ExchangeRateService {
 
         ExchangeRate exchangeRate = exchangeRateList.get(0);
 
-        Double amount = amountToBeConverted / exchangeRate.getRate();
+        BigDecimal amount = amountToBeConverted.divide(exchangeRate.getRate(), 5, RoundingMode.HALF_UP);
 
-        String amountWithCurrency = amount + config.getBaseCurrencyHolder().getCurrency().getSymbol();
+        convertedResult.put(baseCurrency.getCurrency().getDisplayName(),amount);
 
-        return new ResponseEntity<String>(amountWithCurrency, HttpStatus.OK);
+        return new ResponseEntity<HashMap>(convertedResult, HttpStatus.OK);
     }
 
 

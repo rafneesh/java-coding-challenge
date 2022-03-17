@@ -1,6 +1,6 @@
 package com.crewmeister.cmcodingchallenge.service;
 
-import com.crewmeister.cmcodingchallenge.components.DataFeed;
+import com.crewmeister.cmcodingchallenge.components.data.CurrencyDataFeed;
 import com.crewmeister.cmcodingchallenge.entity.CurrencyHolder;
 import com.crewmeister.cmcodingchallenge.repository.CurrencyRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,20 +23,25 @@ public class CurrencyService {
     private CurrencyRepository currencyRepository;
 
     @Autowired
-    private DataFeed dataFeed;
+    private CurrencyDataFeed dataFeed;
 
     @PostConstruct
     public void init() {
         log.info("init in CurrencyService STARTS");
-        currencyRepository.saveAll(dataFeed.loadCurrencies());
+        loadAllCurrencies();
         log.info("init in CurrencyService DONE");
     }
 
     @Scheduled(cron = "${cron.expression}")
     public void execute() {
         log.info("execute in CurrencyService STARTS");
-        currencyRepository.saveAll(dataFeed.loadCurrencies());
+        loadAllCurrencies();
         log.info("execute in CurrencyService DONE");
+    }
+
+    private void loadAllCurrencies(){
+
+        currencyRepository.saveAll(dataFeed.loadCurrencies());
     }
 
     public ResponseEntity<ArrayList<CurrencyHolder>> getCurrencies() {
@@ -52,11 +57,6 @@ public class CurrencyService {
     public void saveAll(List<CurrencyHolder> currencies) {
 
         currencyRepository.saveAll(currencies);
-    }
-
-    public Currency get(CurrencyHolder currency) {
-
-        return null;
     }
 
 }
