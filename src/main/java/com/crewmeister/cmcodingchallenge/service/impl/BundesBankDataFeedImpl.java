@@ -1,9 +1,9 @@
-package com.crewmeister.cmcodingchallenge.components.data.impl;
+package com.crewmeister.cmcodingchallenge.service.impl;
 
-import com.crewmeister.cmcodingchallenge.components.data.CurrencyDataFeed;
-import com.crewmeister.cmcodingchallenge.components.data.ExchangeRateDataFeed;
 import com.crewmeister.cmcodingchallenge.entity.CurrencyHolder;
 import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
+import com.crewmeister.cmcodingchallenge.service.CurrencyDataFeed;
+import com.crewmeister.cmcodingchallenge.service.ExchangeRateDataFeed;
 import com.crewmeister.cmcodingchallenge.utils.DataFeedUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-public class BundesBankDataFeed implements CurrencyDataFeed, ExchangeRateDataFeed {
+public class BundesBankDataFeedImpl implements CurrencyDataFeed, ExchangeRateDataFeed {
 
     @Autowired
     CurrencyHolder baseCurrency;

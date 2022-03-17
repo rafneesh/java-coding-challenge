@@ -21,10 +21,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Currency;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -124,6 +121,8 @@ public class DataFeedUtils {
                     }
 
                     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
                     Date date = null;
                     BigDecimal rate = null;
                     String remarks = null;

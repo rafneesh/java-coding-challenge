@@ -1,6 +1,6 @@
 package com.crewmeister.cmcodingchallenge;
 
-import com.crewmeister.cmcodingchallenge.components.data.CurrencyDataFeed;
+import com.crewmeister.cmcodingchallenge.service.CurrencyDataFeed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
