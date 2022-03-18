@@ -53,28 +53,30 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRates() {
 
-        return new ResponseEntity<ArrayList<ExchangeRate>>((ArrayList<ExchangeRate>) exchangeRateRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>((ArrayList<ExchangeRate>) exchangeRateRepository.findAll(), HttpStatus.OK);
     }
 
 
     public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRatesForDate(Date date) {
 
-        return new ResponseEntity<ArrayList<ExchangeRate>>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDate(date), HttpStatus.OK);
+        return new ResponseEntity<>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDate(date), HttpStatus.OK);
     }
 
-    public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRatesForDateAndCurrencyTo(Date date, Currency currency) {
+    public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRatesForDateAndCurrencyFrom(Date date, Currency currency) {
 
-        return new ResponseEntity<ArrayList<ExchangeRate>>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDateAndCurTo(date, currency), HttpStatus.OK);
+        return new ResponseEntity<>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDateAndCurFrom(date, currency), HttpStatus.OK);
     }
 
     public ResponseEntity<ArrayList<ExchangeRate>> getExchangeRatesForDateAndCurrencyFromAndCurrencyTo(Date date, Currency currencyFrom, Currency currencyTo) {
 
-        return new ResponseEntity<ArrayList<ExchangeRate>>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, currencyFrom, currencyTo), HttpStatus.OK);
+        return new ResponseEntity<>((ArrayList<ExchangeRate>) exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, currencyFrom, currencyTo), HttpStatus.OK);
     }
 
-    public ResponseEntity<HashMap> getAmountConvertedInEuro(Date date, String currencyFrom, BigDecimal amountToBeConverted) {
+    public ResponseEntity<HashMap<String,BigDecimal>> getAmountConvertedInEuro(Date date, String currencyFrom, BigDecimal amountToBeConverted) {
 
-        HashMap<String, BigDecimal> convertedResult = new HashMap();
+        Currency euroCurrency = Currency.getInstance("EUR");
+
+        HashMap<String, BigDecimal> convertedResult = new HashMap<>();
 
         try {
 
@@ -87,9 +89,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
             throw new CurrencyNotFoundException();
         }
 
-        List<ExchangeRate> exchangeRateList = exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, Currency.getInstance(currencyFrom), baseCurrency.getCurrency());
+        List<ExchangeRate> exchangeRateList = exchangeRateRepository.findAllByDateAndCurFromAndCurTo(date, euroCurrency,Currency.getInstance(currencyFrom));
 
-        if (exchangeRateList.size() < 1) {
+        if (exchangeRateList.isEmpty()) {
 
             throw new ExchangeRateNotFound();
         }
@@ -98,9 +100,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
         BigDecimal amount = amountToBeConverted.divide(exchangeRate.getRate(), 5, RoundingMode.HALF_UP);
 
-        convertedResult.put(baseCurrency.getCurrency().getDisplayName(),amount);
+        convertedResult.put(euroCurrency.getDisplayName(),amount);
 
-        return new ResponseEntity<HashMap>(convertedResult, HttpStatus.OK);
+        return new ResponseEntity<>(convertedResult, HttpStatus.OK);
     }
 
 

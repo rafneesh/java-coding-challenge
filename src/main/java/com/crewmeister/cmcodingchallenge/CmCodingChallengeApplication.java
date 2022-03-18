@@ -11,10 +11,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class CmCodingChallengeApplication {
 
-	@Autowired
-    CurrencyDataFeed dataFeed;
-
 	public static void main(String[] args) {
+
+		System.setProperty("user.timezone", "GMT");
+
 		SpringApplication.run(CmCodingChallengeApplication.class, args);
 	}
 

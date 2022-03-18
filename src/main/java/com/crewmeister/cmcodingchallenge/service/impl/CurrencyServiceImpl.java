@@ -46,7 +46,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     public ResponseEntity<ArrayList<CurrencyHolder>> getCurrencies() {
 
-       return new ResponseEntity<ArrayList<CurrencyHolder>>((ArrayList<CurrencyHolder>) currencyRepository.findAll(), HttpStatus.OK);
+       return new ResponseEntity<>((ArrayList<CurrencyHolder>) currencyRepository.findAll(), HttpStatus.OK);
     }
 
     public CurrencyHolder save(CurrencyHolder currency) {

@@ -2,6 +2,7 @@ package com.crewmeister.cmcodingchallenge.service.impl;
 
 import com.crewmeister.cmcodingchallenge.entity.CurrencyHolder;
 import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
+import com.crewmeister.cmcodingchallenge.exception.DataFeedException;
 import com.crewmeister.cmcodingchallenge.service.CurrencyDataFeed;
 import com.crewmeister.cmcodingchallenge.service.ExchangeRateDataFeed;
 import com.crewmeister.cmcodingchallenge.utils.DataFeedUtils;
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 
-@Slf4j
 @Component
+@Slf4j
 public class BundesBankDataFeedImpl implements CurrencyDataFeed, ExchangeRateDataFeed {
 
     @Autowired
@@ -44,7 +45,7 @@ public class BundesBankDataFeedImpl implements CurrencyDataFeed, ExchangeRateDat
 
             // In case of any IO errors / any parsing exceptions, we want the messages written to the console
 
-        } catch (Exception e) {
+        } catch (DataFeedException e) {
             log.error("Exception in Loading currencies =>" + e);
         }
 
@@ -66,7 +67,7 @@ public class BundesBankDataFeedImpl implements CurrencyDataFeed, ExchangeRateDat
             dataFeedUtils.parseExchangeRatesForBundesBank(dataFeedLink, exchangeRates);
 
 
-        } catch (Exception e) {
+        } catch (DataFeedException e) {
             log.warn("Exception in Loading loadExchangeRates => " + e);
         }
 

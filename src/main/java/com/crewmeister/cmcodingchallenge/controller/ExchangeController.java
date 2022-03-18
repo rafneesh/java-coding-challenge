@@ -25,7 +25,8 @@ public class ExchangeController {
 
     @GetMapping("/rates")
     public ResponseEntity<ArrayList<ExchangeRate>> getRates(@RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date) {
-        log.info("Inside getRates from ExchangeController " + date);
+        log.info("Inside getRates from ExchangeController ");
+        log.debug("Params:"+ date);
 
         if (date != null)
             return exchangeRateService.getExchangeRatesForDate(date);
@@ -36,16 +37,18 @@ public class ExchangeController {
 
     @GetMapping("/rates/{date}")
     public ResponseEntity<ArrayList<ExchangeRate>> getRatesForDate(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date) {
-        log.info("Inside getRatesForDate from ExchangeController " + date);
+        log.info("Inside getRatesForDate from ExchangeController ");
+        log.debug("Params:"+ date);
 
         return exchangeRateService.getExchangeRatesForDate(date);
 
     }
 
     @GetMapping("/euro/converter/{date}")
-    public ResponseEntity<HashMap> getEuroConvertedAmountForDate(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date, @RequestParam(value = "currencyFrom", required = true) String currency, @RequestParam(value = "amount", required = true) BigDecimal amount) {
+    public ResponseEntity<HashMap<String,BigDecimal>> getEuroConvertedAmountForDate(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") @Validated Date date, @RequestParam(value = "currencyFrom", required = true) String currency, @RequestParam(value = "amount", required = true) BigDecimal amount) {
 
-        log.info("Inside getConvertedAmountForDate from ExchangeController " + date + currency + amount);
+        log.info("Inside getConvertedAmountForDate from ExchangeController ");
+        log.debug("Params:"+ date + currency + amount);
 
         return exchangeRateService.getAmountConvertedInEuro(date, currency.toUpperCase(Locale.ROOT), amount);
 
